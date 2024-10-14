@@ -1,0 +1,51 @@
+Cap 2: 
+> Class 6
+ - Command line to create of .NET application:
+    1. criar a solução: dotnet new sln.
+    2. criar a aplicação de backend (web application): dotnet new webapi -o API --use-controllers
+    3. adicionar a API na solução: dotnet sln add API
+> Class 8:
+   - Adjustment the file launchSettings to run just http profile like the code sneppet below:
+   {
+  "$schema": "http://json.schemastore.org/launchsettings.json",
+  "profiles": {
+    "http": {
+      "commandName": "Project",
+      "dotnetRunMessages": true,
+      "launchBrowser": false,
+      "applicationUrl": "http://localhost:5000",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
+    },
+  }
+}
+
+> Class 9:
+  - create a folder called Entities where you will create some class;
+      1. Product(Id, Name, Description, Price, PictureUrl, Type, Brand, QuatityInStock)
+
+> Class 11:
+  - Install the packege of EntityFramework:
+    microsoft.entityframeworkcore... > to postgreSQL.
+    microsoft.entityframeworkcore.Design > to create ddatabase via Migration
+
+  - Create a new folder called Data where you will create a new class called StoreContext. 
+    This class will inherit (implement) from DbContext. You will create a constructor for this class where this will receive
+    the object DBContextOption and it will pass the object to base class. After this, you will declare the variable Products in this class
+    that it will be of the type DbSet<Product>. You need to add the service AddDbContext<StoreContext> on the Program.cs classe.
+
+> Class 12:
+  - Create a entity EntityFramework Migration.
+  - Run the command 
+      > dotnet ef migrations add Initial -o Data/Migrations.  -- create a inicial migration.
+      > dotnet ef database update                             -- update the database. 
+
+> Class 13: Create a class called DbInitializer where it will do a seed on our database.
+> Class 14: 
+  - Run the following command to drop the database: dotnet ef database drop.
+  - Run the application to exec the seed of information on you database.
+
+
+
+
