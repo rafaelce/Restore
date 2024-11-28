@@ -2,6 +2,14 @@ using API;
 
 var builder = WebApplication.CreateBuilder(args);
 
+//Cors policy
+builder.Services.AddCors(c => {
+    c.AddPolicy("frontend", opt => opt
+        .WithOrigins("http://localhost:3000")
+        .AllowAnyHeader()
+        .AllowAnyMethod());
+});
+
 // Add services to the container.
 builder.Services.AddControllers();
 
@@ -22,6 +30,7 @@ app.UseAuthorization();
 
 app.MapControllers();
 
+app.UseCors("frontend");
 app.UseRestoreModule(builder.Configuration);
 
 app.Run();

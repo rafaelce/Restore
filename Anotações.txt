@@ -46,6 +46,60 @@ Cap 2:
   - Run the following command to drop the database: dotnet ef database drop.
   - Run the application to exec the seed of information on you database.
 
+> Class 20: Create a React soluction with Vite. Exec on terminal the following command: npm create vite@latest
+  - To change the port that run the application you need to change the vite.config.ts file like following:
+      export default defineConfig({
+      server: {
+        port: 3000
+      },
+      plugins: [react()],
+    })
+  - If you want to run the application with "start" word, you need to change the package.json file like the following:
+      "scripts": {
+      "start": "vite", -- line changed
+      "dev": "vite",
+      "build": "tsc -b && vite build",
+      "lint": "eslint .",
+      "preview": "vite preview"
+    },
+> Class 23: Add useState to store a object on the memory to use this in our application. Use too prevState to have access
+  the previus values to store on the useState.
+  Ex:
+     const [products, setProducts] = useState([
+        { name: "product 1", price: 100 },
+        { name: "product 2", price: 200 },
+      ]);
 
+      function addProduct(){
+        setProducts((prevState) => [
+          ...prevState,
+          { name: "product " + (prevState.length + 1), price: (prevState.length * 100) + 100 },
+        ]);
+      }
 
+> Class 24: Add useEffect to do somethings when you application load in your browser.
+    useEffect(() => {
+      fetch("http://localhost:5000/api/products")
+        .then((response) => response.json())
+        .then((data: { name: string; price: number }[]) => setProducts(data))
+    }, []);
+
+> Class 25: To use the fetch is necessary to add a CORS policy in your API.
+    builder.Services.AddCors(c => {
+      c.AddPolicy("frontend", opt => opt
+          .WithOrigins("http://localhost:3000")
+          .AllowAnyHeader()
+          .AllowAnyMethod());
+    });
+
+    --after var app = builder.Build();
+    app.UseCors("frontend");
+
+  > Class 27: Create a type Product where this is a Interface and receive the information of Products in our database.
+  > Class 29: Add a new component called Catalog.tsx where this will be a representation of catalog of products.
+              You need to pass a product object for it.
+  > Install the Material UI in application. It's a design framework. Run the following commands:
+    - npm install @mui/material @emotion/react @emotion/styled => Default installation
+    - npm install @fontsource/roboto => Robot font
+    - npm install @mui/icons-material => Icons
 
