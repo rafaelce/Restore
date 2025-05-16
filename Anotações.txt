@@ -1,4 +1,0 @@
-Passos de criações da API:
--------------------------
-    - criar um entity (produto): aula 09
-    - instala os pacotes do entity framework : aula 11
