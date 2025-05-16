@@ -7,7 +7,7 @@ namespace API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class ProductController(ApplicationContext context) : ControllerBase
+public class ProductsController(ApplicationContext context) : ControllerBase
 {
     [HttpGet]
 
