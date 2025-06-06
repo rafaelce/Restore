@@ -1,14 +1,17 @@
+using API.Middleware;
 using API.Modules;
 using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddCors(c => {
+builder.Services.AddCors(c =>
+{
     c.AddPolicy("frontend", options => options
         .WithOrigins("https://localhost:3000")
         .AllowAnyHeader()
         .AllowAnyMethod());
 });
+builder.Services.AddTransient<ExceptionMiddleware>();
 
 builder.Services
     .AddOpenApi()
@@ -28,6 +31,7 @@ if (app.Environment.IsDevelopment())
     app.MapScalarApiReference();
 }
 
+app.UseMiddleware<ExceptionMiddleware>();
 app.UseCors("frontend");
 
 app.Run();
