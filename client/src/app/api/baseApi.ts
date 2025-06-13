@@ -9,6 +9,7 @@ import { getNavigate } from "../routes/router";
 
 const customBaseQuery = fetchBaseQuery({
   baseUrl: import.meta.env.VITE_API_URL,
+  credentials: "include",
 });
 
 type ErrorResponse =
@@ -32,7 +33,8 @@ export const baseQueryWithErrorHandling = async (
   extraOptions: object
 ) => {
 
-  const router = getNavigate(); // pega o navigate do React Router armazenado globalmente
+  // pega o navigate do React Router armazenado globalmente
+  const router = getNavigate(); 
 
   api.dispatch(startLoading());
   await sleep();
