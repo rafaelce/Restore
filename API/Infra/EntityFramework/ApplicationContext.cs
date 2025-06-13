@@ -6,6 +6,8 @@ namespace API.Infra.EntityFramework;
 public class ApplicationContext : DbContext
 {
     public required DbSet<Product> Products { get; set; }
+    public required DbSet<Basket> Baskets { get; set; }
+
 
     public ApplicationContext(DbContextOptions<ApplicationContext> options) : base(options)
     {
