@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { useNavigate, Outlet } from "react-router-dom";
+import { useNavigate, Outlet, ScrollRestoration } from "react-router-dom";
 import {
   Box,
   Container,
@@ -32,6 +32,7 @@ function App() {
 
   return (
     <ThemeProvider theme={theme}>
+      <ScrollRestoration />
       <CssBaseline />
       <NavBar />
       <Box

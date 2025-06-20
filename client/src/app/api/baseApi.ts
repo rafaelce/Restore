@@ -27,6 +27,12 @@ const isObjectWithErrors = (
 ): data is { errors: Record<string, string[]> } =>
   typeof data === "object" && data !== null && "errors" in data;
 
+
+/*
+  Essa função faz uma requisição de dados na API
+  e gerencia erros que podem ocorrer durante o processo.
+*/
+
 export const baseQueryWithErrorHandling = async (
   args: string | FetchArgs,
   api: BaseQueryApi,
