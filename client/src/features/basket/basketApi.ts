@@ -3,9 +3,28 @@ import { baseQueryWithErrorHandling } from "../../app/api/baseApi";
 import {Item, type Basket } from "../../app/models/basket";
 import type { Product } from "../../app/models/product";
 
+/*
+    > builder.query: é usado para buscar dados (operações do tipo GET).
+    > builder.mutation: - é usado para alterar dados (operações como POST, PUT, PATCH ou DELETE)
+
+    > onQueryStarted:  é um callback opcional do RTK Query que permite executar lógica personalizada 
+    assim que uma query ou mutation é iniciada, antes mesmo de receber a resposta do servidor.
+    recebe dois parâmetros fixos: 
+
+    1. arg: o argumento passado para a mutation ou query (pode ser um objeto com várias propriedades
+    2. api: um objeto com várias ferramentas úteis, como dispatch, getState, queryFulfilled, entre outros.
+
+    > dispatch: Imagine que você tem um estado global (como uma caixa com informações do seu app), 
+    e quer dizer: “Ei, atualiza esse estado com esses novos dados!”. O dispatch faz exatamente 
+    isso: ele envia uma ação para a store, pedindo que o estado seja atualizado.
+
+    > queryFulfilled: é uma Promise que resolve quando a requisição termina com sucesso. 
+    Você pode usar 'await queryFulfilled' para executar lógica somente após a resposta do servidor.
+
+*/
 
 function isBasketItem(product: Product | Item): product is Item {
-    return (product as Item).quantity !== undefined;
+  return (product as Item).quantity !== undefined;
 }
 
 export const basketApi = createApi({
@@ -32,14 +51,14 @@ export const basketApi = createApi({
             //código adicionado para automatizar o refresh da página de carrinho
             //quando os produtos forem adicionados na página de catálogo.
             onQueryStarted: async ({product, quantity}, { dispatch, queryFulfilled }) => {
-                let isNweBasket = false;
+                let isNewBasket = false;
                 const patchResult = dispatch(
                     basketApi.util.updateQueryData('fetchBasket', undefined, (draft) => {
                         const productId = isBasketItem(product) ? product.productId : product.id;
                         
-                        if(!draft?.basketId) isNweBasket =  true;
+                        if(!draft?.basketId) isNewBasket = true;
                         
-                        if(!isNweBasket){
+                        if(!isNewBasket){
                             const existingItem = draft.items.find(item => item.productId === productId)
 
                             if (existingItem) existingItem.quantity += quantity;
@@ -50,7 +69,7 @@ export const basketApi = createApi({
                 
                 try {
                     await queryFulfilled;
-                    if(isNweBasket) dispatch(basketApi.util.invalidateTags(['Basket']));
+                    if(isNewBasket) dispatch(basketApi.util.invalidateTags(['Basket']));
                 }catch (error) {
                     console.log(error);
                     patchResult.undo();

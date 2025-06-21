@@ -1,4 +1,6 @@
+using System.Threading.Tasks;
 using API.Entities;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace API.Infra.EntityFramework;
@@ -10,14 +12,38 @@ public class ApplyMigrationBackgroundService(IServiceProvider serviceProvider) :
         using var applicationContext = serviceProvider.CreateScope().ServiceProvider.GetService<ApplicationContext>() 
             ?? throw new InvalidOperationException("Failed to retrieve store context");
 
+        using var userManager = serviceProvider.CreateScope().ServiceProvider.GetService<UserManager<User>>()
+        ?? throw new InvalidOperationException("Failed to retrieve user");
+
         await applicationContext?.Database.MigrateAsync(stoppingToken)!;
 
-        SeedData(applicationContext);
+        await SeedData(applicationContext, userManager);
     }
 
-    private static void SeedData(ApplicationContext context)
+    private static async Task SeedData(ApplicationContext context, UserManager<User> userManager)
     {
-        if(context.Products.Any()) return;
+        if (!userManager.Users.Any())
+        {
+            var user = new User
+            {
+                UserName = "rcruz@test.com",
+                Email = "rcruz@test.com"
+            };
+
+            await userManager.CreateAsync(user, "P@ssw0rd");
+            await userManager.AddToRoleAsync(user, "Member");
+
+            var admin = new User
+            {
+                UserName = "admin@test.com",
+                Email = "admin@test.com"
+            };
+
+            await userManager.CreateAsync(admin, "P@ssw0rd");
+            await userManager.AddToRolesAsync(admin, ["Member", "Admin"]);
+        }
+
+        if (context.Products.Any()) return; 
 
         var products = new List<Product> {
             new() {

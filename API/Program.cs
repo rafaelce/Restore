@@ -1,5 +1,8 @@
+using API.Entities;
+using API.Infra.EntityFramework;
 using API.Middleware;
 using API.Modules;
+using Microsoft.AspNetCore.Identity;
 using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -13,6 +16,15 @@ builder.Services.AddCors(c =>
         .AllowAnyMethod());
 });
 builder.Services.AddTransient<ExceptionMiddleware>();
+builder.Services.AddIdentityApiEndpoints<User>(opt =>
+{
+    opt.User.RequireUniqueEmail = true;
+    opt.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
+    opt.Lockout.MaxFailedAccessAttempts = 5;
+    opt.Lockout.AllowedForNewUsers = false;
+})
+    .AddRoles<IdentityRole>()
+    .AddEntityFrameworkStores<ApplicationContext>();
 
 builder.Services
     .AddOpenApi()
@@ -33,6 +45,17 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseMiddleware<ExceptionMiddleware>();
-app.UseCors("frontend");
+app.UseCors(opt =>
+{
+    opt.WithOrigins("https://localhost:3000")
+       .AllowAnyHeader()
+       .AllowAnyMethod()
+       .AllowCredentials();
+});
+
+app.UseAuthentication();
+app.UseAuthorization();
+
+app.MapGroup("api").MapIdentityApi<User>();
 
 app.Run();
