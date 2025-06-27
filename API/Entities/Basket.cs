@@ -5,6 +5,9 @@ public class Basket
     public int Id { get; set; }
     public required string BasketId { get; set; }
     public List<BasketItem> Items { get; set; } = [];
+    
+    public string? ClientSecret { get; set; }
+    public string? PaymentIntentId { get; set; }
 
     public void AddItem(Product product, int quantity)
     {
@@ -13,7 +16,7 @@ public class Basket
 
         var item = FindItem(product.Id);
         if (item is null)
-            Items.Add(new BasketItem { Product = product, Quantity = quantity,  });
+            Items.Add(new BasketItem { Product = product, Quantity = quantity, });
         else
             item.Quantity += quantity;
     }

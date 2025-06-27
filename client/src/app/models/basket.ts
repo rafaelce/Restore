@@ -4,6 +4,8 @@ export type Basket = {
     id: number
     basketId: string
     items: Item[]
+    clientSecret?: string
+    paymentIntentId?: string
 }
 
 export class Item {

@@ -26,7 +26,7 @@ public class ApplyMigrationBackgroundService(IServiceProvider serviceProvider) :
         {
             var user = new User
             {
-                UserName = "rcruz@test.com",
+                UserName = "rcruz@test.com", 
                 Email = "rcruz@test.com"
             };
 

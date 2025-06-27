@@ -1,37 +1,13 @@
 using API.Entities;
-using API.Infra.EntityFramework;
 using API.Middleware;
 using API.Modules;
-using Microsoft.AspNetCore.Identity;
 using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddCors(c =>
-{
-    c.AddPolicy("frontend", options => options
-        .AllowCredentials()
-        .WithOrigins("https://localhost:3000")
-        .AllowAnyHeader()
-        .AllowAnyMethod());
-});
-builder.Services.AddTransient<ExceptionMiddleware>();
-builder.Services.AddIdentityApiEndpoints<User>(opt =>
-{
-    opt.User.RequireUniqueEmail = true;
-    opt.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
-    opt.Lockout.MaxFailedAccessAttempts = 5;
-    opt.Lockout.AllowedForNewUsers = false;
-})
-    .AddRoles<IdentityRole>()
-    .AddEntityFrameworkStores<ApplicationContext>();
-
 builder.Services
     .AddOpenApi()
     .AddApiModule(builder.Configuration, builder.Environment);
-
-// Add services to the container.
-builder.Services.AddControllers();
 
 var app = builder.Build();
 
@@ -42,6 +18,11 @@ if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
     app.MapScalarApiReference();
+    app.UseReDoc(opt => {
+        opt.DocumentTitle = "API Documentation";
+        opt.RoutePrefix = "redoc";
+        opt.SpecUrl = "/openapi/v1.json";
+    });
 }
 
 app.UseMiddleware<ExceptionMiddleware>();

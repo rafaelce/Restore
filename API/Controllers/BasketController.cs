@@ -74,7 +74,6 @@ public class BasketController(ApplicationContext context) : BaseApiController
         return await context.Baskets
             .Include(b => b.Items)
             .ThenInclude(i => i.Product)
-            .FirstOrDefaultAsync();
-            // .FirstOrDefaultAsync(b => b.BasketId == Request.Cookies["basketId"]);
+            .FirstOrDefaultAsync(b => b.BasketId == Request.Cookies["basketId"]);
     }
 }

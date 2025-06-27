@@ -15,7 +15,7 @@ export default function Catalog() {
   const { data: filtersData, isLoading: filtersLoading } = useFetchFiltersQuery();
   const dispatch = useAppDispatch();
 
-  if (isLoading || !data || filtersLoading || !filtersData) return <AppLoading />;
+  if (isLoading || !data || filtersLoading || !filtersData) return <AppLoading text="Loading catalog" />;
 
   return (
     <Grid container spacing={4}>

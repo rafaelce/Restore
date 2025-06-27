@@ -3,6 +3,7 @@ import { Button, Divider, Grid, Table, TableBody, TableCell, TableContainer, Tab
 import { useFetchProductDetailsQuery } from "./catalogApi";
 import {useAddBasketItemMutation, useFetchBasketQuery, useRemoveBasketItemMutation } from "../basket/basketApi";
 import {useEffect, useState, type ChangeEvent } from "react";
+import AppLoading from "../../app/shared/AppLoading";
 
 export default function ProductDetails() {
   
@@ -20,7 +21,7 @@ export default function ProductDetails() {
   
   const { data: product, isLoading } = useFetchProductDetailsQuery(id? +id : 0);
   
-  if (!product || isLoading) return <div>Loading...</div>;
+  if (!product || isLoading) return <AppLoading text="Loading details" />;
 
   const handleUpdateBasket = () => {
     const updatedQuantity = item ? Math.abs(quantity - item.quantity) : quantity;

@@ -95,6 +95,6 @@ export default function NavBar() {
           <LinearProgress color="inherit" />
         </Box>
       )}
-    </AppBar>
+   </AppBar>
   );
 }

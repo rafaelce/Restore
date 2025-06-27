@@ -1,7 +1,7 @@
-import { Backdrop } from "@mui/material";
-import { RotatingTriangles } from "react-loader-spinner";
+import { Backdrop, Typography } from "@mui/material";
+import { ScaleLoader } from "react-spinners";
 
-export default function AppLoading() {
+export default function AppLoading({ text = "" }) {
   return (
     <Backdrop
       open={true}
@@ -13,14 +13,17 @@ export default function AppLoading() {
         color: "text.secondary",
       }}
     >
-      <RotatingTriangles
-        visible={true}
-        height="200"
-        width="200"
-        ariaLabel="rotating-triangles-loading"
-        wrapperStyle={{}}
-        wrapperClass=""
-        colors={["#00e5ff", "#00bcd4", "#1976d2"]}
+      {text && (
+        <Typography variant="h6" sx={{ mb: 2 }}>
+          {text}
+        </Typography>
+      )}
+      <ScaleLoader
+        color="#1976d2"
+        height={80}
+        width={8}
+        radius={4}
+        margin={4}
       />
     </Backdrop>
   );

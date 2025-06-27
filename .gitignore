@@ -198,9 +198,6 @@ publish/
 # in these scripts will be unencrypted
 PublishScripts/
 
-# Development configuration files with sensitive data
-appsettings.Development.json
-
 # NuGet Packages
 *.nupkg
 # NuGet Symbol Packages
@@ -487,3 +484,4 @@ $RECYCLE.BIN/
 # Vim temporary swap files
 *.swp
 API/appsettings.json
+API/appsettings.Development.json

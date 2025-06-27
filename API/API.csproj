@@ -14,7 +14,9 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="9.0.6" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.6" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.4" />
+    <PackageReference Include="Redoc.AspNetCore" Version="1.0.0" />
     <PackageReference Include="Scalar.AspNetCore" Version="2.4.22" />
+    <PackageReference Include="Stripe.net" Version="48.2.0" />
   </ItemGroup>
 
   <ItemGroup>
