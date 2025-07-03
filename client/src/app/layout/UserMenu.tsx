@@ -11,7 +11,9 @@ import Logout from "@mui/icons-material/Logout";
 import { useState } from "react";
 import type { User } from "../models/user";
 import { useLogoutMutation } from "../../features/account/accountApi";
-
+import { Link } from "react-router-dom";
+import LocalMallTwoToneIcon from "@mui/icons-material/LocalMallTwoTone";
+import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 
 type Props = {
     user : User;
@@ -34,12 +36,10 @@ export default function UserMenu({ user }: Props) {
     <>
       <Box sx={{ display: "flex", alignItems: "center", textAlign: "center" }}>
         <Tooltip title="Account settings">
-          <IconButton
-            onClick={handleClick}
-            size="small"
-            sx={{ ml: 2 }}
-          >
-            <Avatar sx={{ width: 32, height: 32 }}>{user.email.charAt(0).toUpperCase()}</Avatar>
+          <IconButton onClick={handleClick} size="small" sx={{ ml: 2 }}>
+            <Avatar sx={{ width: 32, height: 32 }}>
+              {user.email.charAt(0).toUpperCase()}
+            </Avatar>
           </IconButton>
         </Tooltip>
       </Box>
@@ -80,8 +80,18 @@ export default function UserMenu({ user }: Props) {
         transformOrigin={{ horizontal: "right", vertical: "top" }}
         anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
       >
-        <MenuItem > <Avatar /> Profile </MenuItem>
-        <MenuItem> <Avatar /> My account </MenuItem>
+        <MenuItem>
+          <ListItemIcon>
+            <AccountCircleIcon />
+          </ListItemIcon>
+          Profile
+        </MenuItem>
+        <MenuItem component={Link} to="/orders">
+          <ListItemIcon>
+            <LocalMallTwoToneIcon fontSize="small" />
+          </ListItemIcon>
+          My orders
+        </MenuItem>
         <Divider />
         <MenuItem onClick={logout}>
           <ListItemIcon>
