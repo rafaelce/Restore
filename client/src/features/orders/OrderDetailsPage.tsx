@@ -3,7 +3,6 @@ import {
   Typography,
   Box,
   Divider,
-  Chip,
   IconButton,
   Tooltip,
   Card,
@@ -25,8 +24,7 @@ import {
   Payment as PaymentIcon,
   ShoppingCart as ShoppingCartIcon,
   Receipt as ReceiptIcon,
-  LocalShipping,
-  Info as InfoIcon
+  LocalShipping
 } from "@mui/icons-material";
 import AppLoading from "../../app/shared/AppLoading";
 import StatusBadge from '../../app/shared/StatusBadge';
@@ -60,22 +58,7 @@ export default function OrderDetailsPage() {
     );
   }
 
-  const getStatusColor = (status: string) => {
-    switch (status.toLowerCase()) {
-      case 'pending':
-        return { bg: theme.palette.warning.light, color: theme.palette.warning.dark, icon: <InfoIcon sx={{ color: theme.palette.warning.dark, mr: 1 }} /> };
-      case 'confirmed':
-        return { bg: theme.palette.info.light, color: theme.palette.info.dark, icon: <InfoIcon sx={{ color: theme.palette.info.dark, mr: 1 }} /> };
-      case 'shipped':
-        return { bg: theme.palette.success.light, color: theme.palette.success.dark, icon: <LocalShipping sx={{ color: theme.palette.success.dark, mr: 1 }} /> };
-      case 'delivered':
-        return { bg: theme.palette.success.light, color: theme.palette.success.dark, icon: <LocalShipping sx={{ color: theme.palette.success.dark, mr: 1 }} /> };
-      default:
-        return { bg: theme.palette.secondary.light, color: theme.palette.secondary.dark, icon: <InfoIcon sx={{ color: theme.palette.secondary.dark, mr: 1 }} /> };
-    }
-  };
 
-  const status = getStatusColor(order.orderStatus);
 
   return (
     <Container

@@ -8,8 +8,13 @@ public static class DatabaseModule
 {
     public static IServiceCollection AddDatabaseModule(this IServiceCollection services, IConfiguration configuration)
     {
+        //postgres
+        //services.AddDbContext<ApplicationContext>(opt =>
+        //opt.UseNpgsql(configuration["Storage:Db:postgres"]!));
+
+        //mssqlserver
         services.AddDbContext<ApplicationContext>(opt =>
-        opt.UseNpgsql(configuration["Storage:Db:ConnectionString"]!));
+        opt.UseSqlServer(configuration["Storage:Db:mssqlserver"]!));
 
         return services;
     }

@@ -39,20 +39,7 @@ export default function OrdersPage() {
 
   if (!orders) return <Typography variant="h5" sx={{ fontWeight: 600 }}> No orders available </Typography>
 
-  const getStatusColor = (status: string) => {
-    switch (status.toLowerCase()) {
-      case 'pending':
-        return { bg: '#fff3e0', color: '#e65100' };
-      case 'confirmed':
-        return { bg: '#e3f2fd', color: '#1565c0' };
-      case 'shipped':
-        return { bg: '#fff8e1', color: '#f57c00' };
-      case 'delivered':
-        return { bg: '#e8f5e8', color: '#2e7d32' };
-      default:
-        return { bg: '#f3e5f5', color: '#7b1fa2' };
-    }
-  };
+
 
   return (
     <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>

@@ -26,6 +26,11 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseMiddleware<ExceptionMiddleware>();
+
+//adicionados para o deploy
+app.UseDefaultFiles();
+app.UseStaticFiles();
+
 app.UseCors(opt =>
 {
     opt.WithOrigins("https://localhost:3000")
@@ -38,5 +43,6 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapGroup("api").MapIdentityApi<User>();
+app.MapFallbackToController("Index", "Fallback");
 
 app.Run();
