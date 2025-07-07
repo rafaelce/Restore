@@ -63,4 +63,3 @@ jobs:
           app-name: 'rcruz-restore'
           slot-name: 'Production'
           package: .
-          
