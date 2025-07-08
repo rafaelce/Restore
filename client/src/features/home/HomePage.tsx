@@ -59,7 +59,7 @@ export default function HomePage() {
             border: "2px solid transparent",
           }}
         >
-         Go to shop
+         Go to shop now
         </Button>
       </Box>
     </Box>
