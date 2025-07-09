@@ -485,4 +485,3 @@ $RECYCLE.BIN/
 *.swp
 API/appsettings.json
 API/appsettings.Development.json
-client/.env.production
