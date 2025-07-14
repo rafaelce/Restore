@@ -14,6 +14,7 @@ import { useLogoutMutation } from "../../features/account/accountApi";
 import { Link } from "react-router-dom";
 import LocalMallTwoToneIcon from "@mui/icons-material/LocalMallTwoTone";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+import { Inventory } from "@mui/icons-material";
 
 type Props = {
     user : User;
@@ -92,6 +93,14 @@ export default function UserMenu({ user }: Props) {
           </ListItemIcon>
           My orders
         </MenuItem>
+        {user.roles?.includes("Admin") && (
+          <MenuItem component={Link} to="/inventory">
+            <ListItemIcon>
+              <Inventory fontSize="small" />
+            </ListItemIcon>
+            Inventory
+          </MenuItem>
+        )}
         <Divider />
         <MenuItem onClick={logout}>
           <ListItemIcon>

@@ -76,6 +76,12 @@ export const baseQueryWithErrorHandling = async (
         }
         break;
 
+      case 403:
+        if (typeof responseData === "object") {
+          toast.error("You are not authorized to do this");
+        }
+        break;
+
       case 404:
         if (isObjectWithTitle(responseData) && router) {
           router("/not-found");

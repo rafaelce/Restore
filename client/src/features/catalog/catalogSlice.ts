@@ -8,6 +8,7 @@ const initialState: ProductParams = {
   brands: [],
   searchTerm: "",
   orderBy: "name",
+  orderDirection: "asc",
 };
 
 export const catalogSlice = createSlice({
@@ -22,6 +23,10 @@ export const catalogSlice = createSlice({
     },
     setOrderBy(state, action) {
       state.orderBy = action.payload;
+      state.pageNumber = 1;
+    },
+    setOrderDirection(state, action) {
+      state.orderDirection = action.payload;
       state.pageNumber = 1;
     },
     setTypes(state, action) {
@@ -48,6 +53,7 @@ export const {
   setPageNumber,
   setPageSize,
   setOrderBy,
+  setOrderDirection,
   setTypes,
   setBrands,
   setSearchTerm,
