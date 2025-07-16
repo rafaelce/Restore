@@ -6,6 +6,7 @@ using API.Services;
 using API.Services.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using StackExchange.Redis;
+using IMessageService = API.Services.Interfaces.IMessageService;
 
 
 namespace API.Modules;
@@ -15,6 +16,7 @@ public static class ApiModule
     public static IServiceCollection AddApiModule(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddDatabaseModule(configuration);
+        services.AddMassTransitModule(configuration);
         services.AddHostedService<ApplyMigrationBackgroundService>();
         services.AddAutoMapper(cfg => cfg.AddMaps(typeof(Program).Assembly));
         services.AddCors(c =>
@@ -60,7 +62,10 @@ public static class ApiModule
         services.AddScoped<PaymentsService>();
         services.AddScoped<ImageService>();
         services.AddScoped<IRedisCacheService, RedisCacheService>();
+        services.AddScoped<IMessageService, MassTransitService>();
 
         return services;
     }
+
+    
 }

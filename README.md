@@ -18,6 +18,7 @@ C4Context
         System(client, "Frontend React", "Interface web para navegação, busca, compra e checkout.")
         SystemDb(db, "Banco de Dados PostgreSQL", "Armazena produtos, usuários, pedidos, etc.")
         SystemDb(redis, "Redis Cache", "Cache em memória para melhorar performance.")
+        SystemDb(rabbitmq, "RabbitMQ", "Sistema de mensageria para processamento assíncrono.")
         System_Ext(stripe, "Stripe API", "Serviço externo de pagamentos.")
       }
     }
@@ -25,6 +26,7 @@ C4Context
     Rel(client, api, "Faz requisições HTTP (REST)")
     Rel(api, db, "ORM/SQL")
     Rel(api, redis, "Cache de dados")
+    Rel(api, rabbitmq, "Mensagens assíncronas")
     Rel(api, stripe, "Integração para pagamentos")
     BiRel(api, client, "Retorna dados e status")
 ```
@@ -34,6 +36,7 @@ C4Context
 - O **frontend** se comunica com a **API .NET Core** via requisições HTTP (REST), enviando e recebendo dados de produtos, usuários, pedidos, etc.
 - A **API** utiliza o **PostgreSQL** para armazenar e recuperar informações do sistema.
 - O **Redis** é usado como cache em memória para melhorar a performance de consultas frequentes.
+- O **RabbitMQ** processa mensagens de forma assíncrona (pedidos, emails, etc.).
 - Para pagamentos, a **API** integra com o serviço externo **Stripe**, processando transações de forma segura.
 
 ---
@@ -46,7 +49,7 @@ C4Context
 ## Como rodar o projeto
 
 ### Pré-requisitos
-- Docker instalado (para PostgreSQL e Redis)
+- Docker instalado (para PostgreSQL, Redis e RabbitMQ)
 - .NET 9.0 SDK
 - Node.js 18+
 
@@ -61,6 +64,7 @@ docker-compose up -d
 4. Preencha as configurações com seus dados reais:
    - String de conexão do banco
    - String de conexão do Redis (já configurada no template)
+   - Configurações do RabbitMQ (já configuradas no template)
    - Chaves da API Stripe (disponíveis no [Painel Stripe](https://dashboard.stripe.com/apikeys))
 
 ```bash
@@ -98,6 +102,7 @@ O arquivo `appsettings.Development.json` está no `.gitignore` e **não deve ser
 - Gestão de pedidos
 - Interface responsiva
 - **Cache Redis** para melhorar performance
+- **Mensageria RabbitMQ** para processamento assíncrono
 
 ## Tecnologias Utilizadas
 
@@ -106,6 +111,7 @@ O arquivo `appsettings.Development.json` está no `.gitignore` e **não deve ser
 - Entity Framework Core
 - PostgreSQL
 - Redis (Cache)
+- RabbitMQ (Mensageria)
 - Stripe API
 
 ### Frontend
@@ -151,4 +157,130 @@ O Redis já está configurado no `docker-compose.yml` e será iniciado automatic
 ```bash
 docker-compose up -d
 ```
+
+---
+
+## RabbitMQ (Mensageria)
+
+O projeto utiliza **RabbitMQ** como sistema de mensageria para processamento assíncrono de tarefas.
+
+### O que é RabbitMQ?
+RabbitMQ é um **"carteiro inteligente"** que entrega mensagens entre diferentes partes do sistema. Permite processar tarefas em background sem afetar a performance da aplicação.
+
+### Como funciona no projeto:
+- **Pedidos**: Quando um pedido é criado, uma mensagem é enviada para processamento assíncrono
+- **Emails**: Confirmações de pedido são enviadas em background
+- **Estoque**: Atualizações de estoque são processadas sem bloquear a aplicação
+- **Faturas**: Geração de faturas acontece em background
+
+### Benefícios:
+- ⚡ **Performance**: Aplicação não fica bloqueada esperando processamento
+- 📊 **Escalabilidade**: Pode processar milhares de mensagens por segundo
+- 🔄 **Confiabilidade**: Mensagens não se perdem, mesmo se o sistema cair
+- 🎯 **Desacoplamento**: Sistemas funcionam independentemente
+
+### Exemplo prático:
+```csharp
+// Quando um pedido é criado
+var message = new OrderCreatedMessage
+{
+    OrderId = order.Id,
+    CustomerEmail = user.Email,
+    TotalAmount = order.Total,
+    CreatedAt = DateTime.UtcNow
+};
+
+// Envia para processamento assíncrono
+await _messageService.PublishMessageAsync(message);
+```
+
+### Configuração:
+O RabbitMQ já está configurado no `docker-compose.yml` e será iniciado automaticamente com:
+```bash
+docker-compose up -d
+```
+
+### Interface de Monitoramento:
+- **URL**: http://localhost:15672
+- **Usuário**: guest
+- **Senha**: guest
+
+---
+
+## 🐳 Docker e Serviços
+
+### Estrutura de Containers
+Todos os serviços estão agrupados na rede `restore-network`:
+
+- **restore-postgres**: Banco de dados PostgreSQL
+- **restore-redis**: Cache Redis
+- **restore-rabbitmq**: Sistema de mensageria RabbitMQ
+
+### Comandos Docker Úteis
+
+#### Iniciar todos os serviços:
+```bash
+docker-compose up -d
+```
+
+#### Verificar status:
+```bash
+docker-compose ps
+```
+
+#### Ver logs:
+```bash
+# Todos os serviços
+docker-compose logs
+
+# Serviço específico
+docker-compose logs restore-postgres
+docker-compose logs restore-redis
+docker-compose logs restore-rabbitmq
+```
+
+#### Parar todos os serviços:
+```bash
+docker-compose down
+```
+
+#### Acessar containers:
+```bash
+# PostgreSQL
+docker exec -it restore-postgres psql -U postgres -d restore
+
+# Redis
+docker exec -it restore-redis redis-cli -a {sua_senha}
+
+# RabbitMQ (bash)
+docker exec -it restore-rabbitmq bash
+```
+
+#### Testar serviços:
+```bash
+# Testar PostgreSQL
+docker exec -it restore-postgres psql -U postgres -d restore -c "SELECT version();"
+
+# Testar Redis
+docker exec -it restore-redis redis-cli -a {sua_senha} PING
+
+# Testar RabbitMQ
+# Acesse http://localhost:15672 e faça login com guest/guest
+```
+
+### Configurações dos Serviços
+
+| Serviço | Porta | Usuário | Senha | Interface |
+|---------|-------|---------|-------|-----------|
+| PostgreSQL | 5432 | postgres | {sua_senha} | - |
+| Redis | 6379 | - | Restore2024! | - |
+| RabbitMQ | 5672/15672 | guest | {sua_senha} | http://localhost:15672 |
+
+### Volumes e Persistência
+- **restore_postgres_data**: Dados do PostgreSQL
+- **restore_redis_data**: Dados do Redis
+- **restore_rabbitmq_data**: Dados do RabbitMQ
+
+### Rede Docker
+Todos os containers estão na rede `restore-network`, permitindo comunicação interna entre os serviços.
 

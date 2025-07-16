@@ -1,0 +1,56 @@
+[
+  {
+    "customerEmail": "joao.silva@email.com",
+    "customerName": "João Silva",
+    "customerId": "user-001",
+    "totalAmount": 299.99,
+    "items": [
+      {
+        "productId": 1,
+        "productName": "Core Board Speed Rush 3",
+        "quantity": 2,
+        "price": 149.99
+      },
+      {
+        "productId": 3,
+        "productName": "Core Red Boots",
+        "quantity": 1,
+        "price": 189.99
+      }
+    ]
+  },
+  {
+    "customerEmail": "maria.santos@email.com",
+    "customerName": "Maria Santos",
+    "customerId": "user-002",
+    "totalAmount": 159.98,
+    "items": [
+      {
+        "productId": 2,
+        "productName": "Core Purple Boots",
+        "quantity": 1,
+        "price": 159.98
+      }
+    ]
+  },
+  {
+    "customerEmail": "pedro.oliveira@email.com",
+    "customerName": "Pedro Oliveira",
+    "customerId": "user-003",
+    "totalAmount": 449.97,
+    "items": [
+      {
+        "productId": 1,
+        "productName": "Core Board Speed Rush 3",
+        "quantity": 1,
+        "price": 149.99
+      },
+      {
+        "productId": 4,
+        "productName": "React Red Boots",
+        "quantity": 2,
+        "price": 149.99
+      }
+    ]
+  }
+]

@@ -59,14 +59,11 @@ public static class ProductExtensions
 
         // Adiciona filtros apenas se existirem
         if (productParams.Brands?.Any() == true)
-        {
             keyParts.Add($"brands:{string.Join("-", productParams.Brands)}");
-        }
+        
 
         if (productParams.Types?.Any() == true)
-        {
             keyParts.Add($"types:{string.Join("-", productParams.Types)}");
-        }
 
         return string.Join(":", keyParts);
     }          

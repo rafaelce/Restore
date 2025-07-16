@@ -1,27 +1,57 @@
 version: '3.8'
 
+name: restore-tools
+
+networks:
+  restore-tools-network:
+    driver: bridge
+
 services:
   postgres:
     image: postgres:latest
+    container_name: restore-tools-postgres
+    networks:
+      - restore-tools-network
     environment:
       POSTGRES_DB: restore
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: your_password
+      POSTGRES_PASSWORD: suasenha
     ports:
       - "5432:5432"
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - restore_tools_postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
 
   redis:
     image: redis:latest
+    container_name: restore-tools-redis
+    networks:
+      - restore-tools-network
     ports:
       - "6379:6379"
     volumes:
-      - redis_data:/data
+      - restore_tools_redis_data:/data
     environment:
-      - REDIS_PASSWORD=Restore2024!
-    command: redis-server --requirepass Restore2024! --appendonly yes
+      - REDIS_PASSWORD=suasenha
+    command: redis-server --requirepass suasenha --appendonly yes
+    restart: unless-stopped
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: restore-tools-rabbitmq
+    networks:
+      - restore-tools-network
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=suasenha
+    volumes:
+      - restore_tools_rabbitmq_data:/var/lib/rabbitmq
+    restart: unless-stopped
 
 volumes:
-  postgres_data:
-  redis_data: 
+  restore_tools_postgres_data:
+  restore_tools_redis_data:
+  restore_tools_rabbitmq_data: 

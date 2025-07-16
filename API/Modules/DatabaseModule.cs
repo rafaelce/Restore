@@ -8,9 +8,9 @@ public static class DatabaseModule
 {
     public static IServiceCollection AddDatabaseModule(this IServiceCollection services, IConfiguration configuration)
     {
-        //mssqlserver
+        // PostgreSQL
         services.AddDbContext<ApplicationContext>(opt =>
-                 opt.UseSqlServer(configuration["ConnectionStrings:DatabaseConnection"]!));
+                 opt.UseNpgsql(configuration.GetConnectionString("DefaultConnection")));
 
         return services;
     }
