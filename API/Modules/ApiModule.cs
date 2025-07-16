@@ -3,7 +3,9 @@ using API.Infra.EntityFramework;
 using API.Middleware;
 using API.RequestHelpers;
 using API.Services;
+using API.Services.Interfaces;
 using Microsoft.AspNetCore.Identity;
+using StackExchange.Redis;
 
 
 namespace API.Modules;
@@ -40,8 +42,15 @@ public static class ApiModule
         // Add services to the container.
         services.AddControllers();
 
+        // Adicionando Redis
+        services.AddSingleton<IConnectionMultiplexer>(c =>
+        {
+            var RedisConfig = ConfigurationOptions.Parse(configuration.GetConnectionString("Redis")!);
+            return ConnectionMultiplexer.Connect(RedisConfig);
+        });
+
         //registra a seção "Cloudinary" do seu arquivo de configuração (ex: appsettings.json ou variáveis de ambiente)
-        services.Configure<CloudinarySettings>(configuration.GetSection("Cloudinary")); 
+        services.Configure<CloudinarySettings>(configuration.GetSection("Cloudinary"));
 
         return services;
     }
@@ -50,7 +59,8 @@ public static class ApiModule
     {
         services.AddScoped<PaymentsService>();
         services.AddScoped<ImageService>();
-        
+        services.AddScoped<IRedisCacheService, RedisCacheService>();
+
         return services;
     }
 }

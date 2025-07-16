@@ -1,4 +1,5 @@
 ﻿using API.Entities;
+using API.RequestHelpers;
 
 namespace API.Extensions;
 
@@ -43,4 +44,31 @@ public static class ProductExtensions
 
         return query;
     }
+
+    // Método auxiliar para gerar chave de cache legível
+    public static string GenerateProductsCacheKey(ProductParams productParams)
+    {
+        var keyParts = new List<string>
+        {
+            "products",
+            $"search:{productParams.SearchTerm ?? "all"}",
+            $"order:{productParams.OrderBy ?? "name"}",
+            $"page:{productParams.PageNumber}",
+            $"size:{productParams.PageSize}"
+        };
+
+        // Adiciona filtros apenas se existirem
+        if (productParams.Brands?.Any() == true)
+        {
+            keyParts.Add($"brands:{string.Join("-", productParams.Brands)}");
+        }
+
+        if (productParams.Types?.Any() == true)
+        {
+            keyParts.Add($"types:{string.Join("-", productParams.Types)}");
+        }
+
+        return string.Join(":", keyParts);
+    }          
+
 }

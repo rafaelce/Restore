@@ -1,13 +1,27 @@
+version: '3.8'
+
 services:
-  sql:
-    image: mcr.microsoft.com/mssql/server:2022-latest
+  postgres:
+    image: postgres:latest
     environment:
-      ACCEPT_EULA: "Y"
-      MSSQL_SA_PASSWORD: "Passw0rd@1"
+      POSTGRES_DB: restore
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: your_password
     ports:
-      - "1433:1433"
+      - "5432:5432"
     volumes:
-      - sql_data:/var/opt/mssql
-    platform: "linux/amd64"
+      - postgres_data:/var/lib/postgresql/data
+
+  redis:
+    image: redis:latest
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    environment:
+      - REDIS_PASSWORD=Restore2024!
+    command: redis-server --requirepass Restore2024! --appendonly yes
+
 volumes:
-  sql_data: 
+  postgres_data:
+  redis_data: 
