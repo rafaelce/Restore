@@ -3,6 +3,7 @@ using API.DTO;
 using API.DTO.MassTransit;
 using API.Entities;
 using API.Entities.OrderAggregate;
+using API.Events;
 using API.Extensions;
 using API.Infra.EntityFramework;
 using API.Services.Interfaces;
@@ -204,6 +205,121 @@ public class OrdersController(ApplicationContext context, IMessageService _messa
         {
             _logger.LogError(ex, "Erro ao processar pedidos de exemplo");
             return StatusCode(500, new { Error = "Erro interno do servidor", Details = ex.Message });
+        }
+    }
+
+    [HttpPost("kafka-demo")]
+    public async Task<ActionResult> CreateKafkaDemo()
+    {
+        try
+        {
+            var kafkaService = HttpContext.RequestServices.GetRequiredService<IKafkaService>();
+
+            // Gerar IDs únicos baseados no timestamp
+            var timestamp = DateTime.UtcNow.Ticks;
+            var userId = $"user-{timestamp % 10000}";
+            var orderId = $"order-{timestamp % 100000}";
+            var sessionId = $"session-{timestamp % 1000}";
+
+            // Lista de produtos para escolha aleatória
+            var products = new[] { "boot-redis1", "boot-core1", "hat-react1", "glove-code1", "sb-ang1" };
+            var random = new Random();
+            var selectedProduct = products[random.Next(products.Length)];
+
+            // Lista de termos de busca para escolha aleatória
+            var searchTerms = new[] { "redis", "react", "angular", "core", "typescript", "javascript" };
+            var selectedSearchTerm = searchTerms[random.Next(searchTerms.Length)];
+
+            // Lista de categorias para escolha aleatória
+            var categories = new[] { "books", "electronics", "clothing", "sports", "home" };
+            var selectedCategory = categories[random.Next(categories.Length)];
+
+            // Simular eventos de usuário
+            var userEvent = new UserEvent
+            {
+                UserId = userId,
+                EventType = "product_view",
+                ProductId = selectedProduct,
+                PageUrl = $"/products/{selectedProduct}",
+                Timestamp = DateTime.UtcNow,
+                AdditionalData = new Dictionary<string, object>
+                {
+                    { "sessionId", sessionId },
+                    { "userAgent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36" },
+                    { "referrer", "https://www.google.com" }
+                }
+            };
+
+            await kafkaService.PublishUserEventAsync(userEvent);
+
+            // Simular evento de pedido
+            var orderEvent = new OrderEvent
+            {
+                OrderId = orderId,
+                UserId = userId,
+                EventType = "order_created",
+                TotalAmount = (decimal)(random.Next(50, 500) + random.NextDouble()),
+                ProductIds = new List<string> { selectedProduct, products[random.Next(products.Length)] },
+                Timestamp = DateTime.UtcNow,
+                AdditionalData = new Dictionary<string, object>
+                {
+                    { "paymentMethod", random.Next(2) == 0 ? "credit_card" : "paypal" },
+                    { "shippingAddress", $"{random.Next(100, 999)} Main St" },
+                    { "discountApplied", random.Next(2) == 0 }
+                }
+            };
+
+            await kafkaService.PublishOrderEventAsync(orderEvent);
+
+            // Simular evento de busca
+            var searchEvent = new SearchEvent
+            {
+                UserId = userId,
+                SearchTerm = selectedSearchTerm,
+                Category = selectedCategory,
+                ResultsCount = random.Next(5, 50),
+                Timestamp = DateTime.UtcNow,
+                AdditionalData = new Dictionary<string, object>
+                {
+                    { "filters", random.Next(2) == 0 ? "price:asc" : "price:desc" },
+                    { "page", random.Next(1, 5) },
+                    { "sortBy", random.Next(2) == 0 ? "relevance" : "date" }
+                }
+            };
+
+            await kafkaService.PublishSearchEventAsync(searchEvent);
+
+            return Ok(new
+            {
+                message = "Kafka events published successfully",
+                events = new
+                {
+                    userEvent = new
+                    {
+                        userId = userEvent.UserId,
+                        eventType = userEvent.EventType,
+                        productId = userEvent.ProductId
+                    },
+                    orderEvent = new
+                    {
+                        orderId = orderEvent.OrderId,
+                        userId = orderEvent.UserId,
+                        eventType = orderEvent.EventType,
+                        totalAmount = orderEvent.TotalAmount
+                    },
+                    searchEvent = new
+                    {
+                        userId = searchEvent.UserId,
+                        searchTerm = searchEvent.SearchTerm,
+                        category = searchEvent.Category,
+                        resultsCount = searchEvent.ResultsCount
+                    }
+                }
+            });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { error = ex.Message });
         }
     }
 

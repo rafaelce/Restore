@@ -1,6 +1,7 @@
 using API.Entities;
 using API.Middleware;
 using API.Modules;
+using API.Services;
 using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -10,6 +11,12 @@ builder.Services
     .AddApiModule(builder.Configuration);
 
 var app = builder.Build();
+
+// using (var scope = app.Services.CreateScope())
+// {
+//     var kafkaTopicService = scope.ServiceProvider.GetRequiredService<KafkaTopicService>();
+//     await kafkaTopicService.CreateTopicsAsync();
+// }
 
 app.MapControllers();
 

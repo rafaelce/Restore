@@ -17,6 +17,7 @@ public static class ApiModule
     {
         services.AddDatabaseModule(configuration);
         services.AddMassTransitModule(configuration);
+        services.AddKafkaConsumer(configuration);
         services.AddHostedService<ApplyMigrationBackgroundService>();
         services.AddAutoMapper(cfg => cfg.AddMaps(typeof(Program).Assembly));
         services.AddCors(c =>
@@ -63,6 +64,8 @@ public static class ApiModule
         services.AddScoped<ImageService>();
         services.AddScoped<IRedisCacheService, RedisCacheService>();
         services.AddScoped<IMessageService, MassTransitService>();
+        services.AddScoped<IKafkaService, KafkaService>();
+        services.AddScoped<KafkaTopicService>();
 
         return services;
     }

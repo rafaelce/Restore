@@ -19,6 +19,7 @@ C4Context
         SystemDb(db, "Banco de Dados PostgreSQL", "Armazena produtos, usuários, pedidos, etc.")
         SystemDb(redis, "Redis Cache", "Cache em memória para melhorar performance.")
         SystemDb(rabbitmq, "RabbitMQ", "Sistema de mensageria para processamento assíncrono.")
+        SystemDb(kafka, "Apache Kafka", "Sistema de streaming de dados para analytics e eventos em tempo real.")
         System_Ext(stripe, "Stripe API", "Serviço externo de pagamentos.")
       }
     }
@@ -27,6 +28,7 @@ C4Context
     Rel(api, db, "ORM/SQL")
     Rel(api, redis, "Cache de dados")
     Rel(api, rabbitmq, "Mensagens assíncronas")
+    Rel(api, kafka, "Streaming de eventos")
     Rel(api, stripe, "Integração para pagamentos")
     BiRel(api, client, "Retorna dados e status")
 ```
@@ -37,6 +39,7 @@ C4Context
 - A **API** utiliza o **PostgreSQL** para armazenar e recuperar informações do sistema.
 - O **Redis** é usado como cache em memória para melhorar a performance de consultas frequentes.
 - O **RabbitMQ** processa mensagens de forma assíncrona (pedidos, emails, etc.).
+- O **Apache Kafka** processa eventos em tempo real para analytics e comportamento do usuário.
 - Para pagamentos, a **API** integra com o serviço externo **Stripe**, processando transações de forma segura.
 
 ---
@@ -103,6 +106,7 @@ O arquivo `appsettings.Development.json` está no `.gitignore` e **não deve ser
 - Interface responsiva
 - **Cache Redis** para melhorar performance
 - **Mensageria RabbitMQ** para processamento assíncrono
+- **Streaming Kafka** para analytics em tempo real
 
 ## Tecnologias Utilizadas
 
@@ -112,6 +116,7 @@ O arquivo `appsettings.Development.json` está no `.gitignore` e **não deve ser
 - PostgreSQL
 - Redis (Cache)
 - RabbitMQ (Mensageria)
+- Apache Kafka (Streaming)
 - Stripe API
 
 ### Frontend
@@ -207,14 +212,81 @@ docker-compose up -d
 
 ---
 
+## Apache Kafka (Streaming de Dados)
+
+O projeto utiliza **Apache Kafka** como sistema de streaming de dados para processamento de eventos em tempo real.
+
+### O que é Apache Kafka?
+Kafka é um **"rio de dados em tempo real"** que processa milhões de eventos por segundo. Diferente do RabbitMQ (que é como um correio), o Kafka é como um stream contínuo de dados onde você pode "pescar" as informações que precisa.
+
+### Como funciona no projeto:
+- **Eventos de Usuário**: Rastreia comportamento do usuário (cliques, navegação, buscas)
+- **Eventos de Pedido**: Monitora criação e atualização de pedidos
+- **Eventos de Busca**: Analisa termos de busca e resultados
+- **Analytics em Tempo Real**: Processa dados para dashboards e relatórios
+
+### Benefícios:
+- ⚡ **Performance Extrema**: Processa milhões de eventos por segundo
+- 📊 **Retenção de Dados**: Mantém eventos por dias/semanas
+- 🔄 **Escalabilidade**: Fácil expansão horizontal
+- 🎯 **Resistência a Falhas**: Dados replicados automaticamente
+- 📈 **Analytics Avançados**: Análise de comportamento em tempo real
+
+### Exemplo prático:
+```csharp
+// Evento de comportamento do usuário
+var userEvent = new UserEvent
+{
+    UserId = "user-123",
+    EventType = "product_view",
+    ProductId = "boot-redis1",
+    PageUrl = "/products/boot-redis1",
+    Timestamp = DateTime.UtcNow
+};
+
+// Envia para processamento em tempo real
+await _kafkaService.PublishUserEventAsync(userEvent);
+```
+
+### Configuração:
+O Kafka já está configurado no `docker-compose.yml` e será iniciado automaticamente com:
+```bash
+docker-compose up -d
+```
+
+### Interface de Monitoramento:
+- **URL**: http://localhost:8081
+- **Acesso**: Direto (sem autenticação)
+
+### Tópicos Kafka:
+- **user-events**: Eventos de comportamento do usuário
+- **order-events**: Eventos relacionados a pedidos
+- **search-events**: Eventos de busca e navegação
+
+### Consumidores:
+- **UserEventsConsumer**: Processa eventos de usuário
+- **OrderEventsConsumer**: Processa eventos de pedido
+- **SearchEventsConsumer**: Processa eventos de busca
+
+### Endpoint de Demonstração:
+```bash
+POST http://localhost:5000/api/orders/kafka-demo
+```
+Gera eventos únicos para teste do sistema Kafka.
+
+---
+
 ## 🐳 Docker e Serviços
 
 ### Estrutura de Containers
-Todos os serviços estão agrupados na rede `restore-network`:
+Todos os serviços estão agrupados na rede `restore-tools-network`:
 
-- **restore-postgres**: Banco de dados PostgreSQL
-- **restore-redis**: Cache Redis
-- **restore-rabbitmq**: Sistema de mensageria RabbitMQ
+- **restore-tools-postgres**: Banco de dados PostgreSQL
+- **restore-tools-redis**: Cache Redis
+- **restore-tools-rabbitmq**: Sistema de mensageria RabbitMQ
+- **kafka**: Sistema de streaming Apache Kafka
+- **zookeeper**: Coordenador do Kafka
+- **kafka-ui**: Interface de monitoramento do Kafka
 
 ### Comandos Docker Úteis
 
@@ -234,9 +306,11 @@ docker-compose ps
 docker-compose logs
 
 # Serviço específico
-docker-compose logs restore-postgres
-docker-compose logs restore-redis
-docker-compose logs restore-rabbitmq
+docker-compose logs restore-tools-postgres
+docker-compose logs restore-tools-redis
+docker-compose logs restore-tools-rabbitmq
+docker-compose logs kafka
+docker-compose logs zookeeper
 ```
 
 #### Parar todos os serviços:
@@ -273,7 +347,7 @@ docker exec -it restore-redis redis-cli -a {sua_senha} PING
 | Serviço | Porta | Usuário | Senha | Interface |
 |---------|-------|---------|-------|-----------|
 | PostgreSQL | 5432 | postgres | {sua_senha} | - |
-| Redis | 6379 | - | Restore2024! | - |
+| Redis | 6379 | - | {sua_senha} | - |
 | RabbitMQ | 5672/15672 | guest | {sua_senha} | http://localhost:15672 |
 
 ### Volumes e Persistência
