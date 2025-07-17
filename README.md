@@ -349,12 +349,17 @@ docker exec -it restore-redis redis-cli -a {sua_senha} PING
 | PostgreSQL | 5432 | postgres | {sua_senha} | - |
 | Redis | 6379 | - | {sua_senha} | - |
 | RabbitMQ | 5672/15672 | guest | {sua_senha} | http://localhost:15672 |
+| Kafka | 9092 | - | - | - |
+| Kafka UI | 8081 | - | - | http://localhost:8081 |
 
 ### Volumes e Persistência
-- **restore_postgres_data**: Dados do PostgreSQL
-- **restore_redis_data**: Dados do Redis
-- **restore_rabbitmq_data**: Dados do RabbitMQ
+- **restore_tools_postgres_data**: Dados do PostgreSQL
+- **restore_tools_redis_data**: Dados do Redis
+- **restore_tools_rabbitmq_data**: Dados do RabbitMQ
+- **kafka-data**: Dados do Kafka
+- **zookeeper-data**: Dados do Zookeeper
+- **zookeeper-logs**: Logs do Zookeeper
 
 ### Rede Docker
-Todos os containers estão na rede `restore-network`, permitindo comunicação interna entre os serviços.
+Todos os containers estão na rede `restore-tools-network`, permitindo comunicação interna entre os serviços.
 
