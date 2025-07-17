@@ -111,7 +111,7 @@ O arquivo `appsettings.Development.json` está no `.gitignore` e **não deve ser
 ## Tecnologias Utilizadas
 
 ### Backend
-- .NET Core 8
+- .NET Core 9
 - Entity Framework Core
 - PostgreSQL
 - Redis (Cache)
@@ -208,7 +208,7 @@ docker-compose up -d
 ### Interface de Monitoramento:
 - **URL**: http://localhost:15672
 - **Usuário**: guest
-- **Senha**: guest
+- **Senha**: {sua_senha}
 
 ---
 
