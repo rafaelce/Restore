@@ -20,6 +20,7 @@ C4Context
         SystemDb(redis, "Redis Cache", "Cache em memória para melhorar performance.")
         SystemDb(rabbitmq, "RabbitMQ", "Sistema de mensageria para processamento assíncrono.")
         SystemDb(kafka, "Apache Kafka", "Sistema de streaming de dados para analytics e eventos em tempo real.")
+        SystemDb(elasticsearch, "Elasticsearch", "Motor de busca e indexação para busca avançada de produtos.")
         System_Ext(stripe, "Stripe API", "Serviço externo de pagamentos.")
       }
     }
@@ -29,6 +30,7 @@ C4Context
     Rel(api, redis, "Cache de dados")
     Rel(api, rabbitmq, "Mensagens assíncronas")
     Rel(api, kafka, "Streaming de eventos")
+    Rel(api, elasticsearch, "Busca avançada")
     Rel(api, stripe, "Integração para pagamentos")
     BiRel(api, client, "Retorna dados e status")
 ```
@@ -40,6 +42,7 @@ C4Context
 - O **Redis** é usado como cache em memória para melhorar a performance de consultas frequentes.
 - O **RabbitMQ** processa mensagens de forma assíncrona (pedidos, emails, etc.).
 - O **Apache Kafka** processa eventos em tempo real para analytics e comportamento do usuário.
+- O **Elasticsearch** fornece busca avançada e indexação de produtos com recursos de full-text search.
 - Para pagamentos, a **API** integra com o serviço externo **Stripe**, processando transações de forma segura.
 
 ---
@@ -107,6 +110,7 @@ O arquivo `appsettings.Development.json` está no `.gitignore` e **não deve ser
 - **Cache Redis** para melhorar performance
 - **Mensageria RabbitMQ** para processamento assíncrono
 - **Streaming Kafka** para analytics em tempo real
+- **Busca Elasticsearch** para busca avançada de produtos
 
 ## Tecnologias Utilizadas
 
@@ -117,6 +121,7 @@ O arquivo `appsettings.Development.json` está no `.gitignore` e **não deve ser
 - Redis (Cache)
 - RabbitMQ (Mensageria)
 - Apache Kafka (Streaming)
+- Elasticsearch (Busca)
 - Stripe API
 
 ### Frontend
@@ -276,6 +281,78 @@ Gera eventos únicos para teste do sistema Kafka.
 
 ---
 
+## Elasticsearch (Busca Avançada)
+
+O projeto utiliza **Elasticsearch** como motor de busca para fornecer busca avançada e indexação de produtos.
+
+### O que é Elasticsearch?
+Elasticsearch é um **"Google para seus dados"** - um motor de busca distribuído que permite buscar informações de forma rápida e inteligente. Diferente de uma busca simples no banco, o Elasticsearch entende sinônimos, erros de digitação e fornece resultados relevantes.
+
+### Como funciona no projeto:
+- **Indexação de Produtos**: Todos os produtos são indexados automaticamente
+- **Busca Full-Text**: Busca por nome, descrição, marca e tipo
+- **Busca Fuzzy**: Encontra resultados mesmo com erros de digitação
+- **Filtros Avançados**: Por preço, marca, tipo, etc.
+- **Ordenação Inteligente**: Por relevância, preço, nome, etc.
+- **Paginação**: Resultados paginados para melhor performance
+
+### Benefícios:
+- ⚡ **Performance**: Busca em milissegundos mesmo com milhares de produtos
+- 🎯 **Relevância**: Resultados mais precisos e relevantes
+- 🔍 **Flexibilidade**: Busca por texto parcial, sinônimos, etc.
+- 📊 **Analytics**: Análise de termos de busca mais populares
+- 🎨 **Experiência do Usuário**: Busca instantânea e sugestões
+
+### Exemplo prático:
+```csharp
+// Busca avançada com filtros
+var searchRequest = new SearchRequestDto
+{
+    Query = "boot angular",
+    Page = 1,
+    PageSize = 10,
+    SortBy = "price",
+    SortOrder = "asc",
+    MinPrice = 100,
+    MaxPrice = 200,
+    Brand = "Angular"
+};
+
+// Resultado com produtos relevantes
+var result = await _elasticsearchService.SearchProductsAsync(searchRequest);
+```
+
+### Configuração:
+O Elasticsearch já está configurado no `docker-compose.yml` e será iniciado automaticamente com:
+```bash
+docker-compose up -d
+```
+
+### Interface de Monitoramento:
+- **Elasticsearch**: http://localhost:9200
+- **Kibana**: http://localhost:5601
+
+### Endpoints da API:
+- **Health Check**: `GET /api/elasticsearch/health`
+- **Busca**: `POST /api/elasticsearch/search`
+- **Indexar Todos**: `POST /api/elasticsearch/index-all-products`
+- **Sincronizar Produto**: `POST /api/elasticsearch/sync-product/{id}`
+- **Remover Produto**: `DELETE /api/elasticsearch/remove-product/{id}`
+
+### Funcionalidades de Busca:
+- **Busca por Texto**: "boot", "angular", "red"
+- **Busca Fuzzy**: "anglar" encontra "angular"
+- **Filtros**: Por preço, marca, tipo
+- **Ordenação**: Por nome, preço, marca, tipo
+- **Paginação**: Resultados paginados
+
+### Frontend:
+- **Rota**: `/elasticsearch-search`
+- **Interface**: Busca avançada com filtros em tempo real
+- **Resultados**: Exibição paginada com ordenação
+
+---
+
 ## 🐳 Docker e Serviços
 
 ### Estrutura de Containers
@@ -287,6 +364,8 @@ Todos os serviços estão agrupados na rede `restore-tools-network`:
 - **kafka**: Sistema de streaming Apache Kafka
 - **zookeeper**: Coordenador do Kafka
 - **kafka-ui**: Interface de monitoramento do Kafka
+- **elasticsearch**: Motor de busca Elasticsearch
+- **kibana**: Interface de monitoramento do Elasticsearch
 
 ### Comandos Docker Úteis
 
@@ -311,6 +390,8 @@ docker-compose logs restore-tools-redis
 docker-compose logs restore-tools-rabbitmq
 docker-compose logs kafka
 docker-compose logs zookeeper
+docker-compose logs elasticsearch
+docker-compose logs kibana
 ```
 
 #### Parar todos os serviços:
@@ -340,7 +421,12 @@ docker exec -it restore-redis redis-cli -a {sua_senha} PING
 
 # Testar RabbitMQ
 # Acesse http://localhost:15672 e faça login com guest/guest
-```
+
+# Testar Elasticsearch
+curl http://localhost:9200
+
+# Testar Kibana
+# Acesse http://localhost:5601
 
 ### Configurações dos Serviços
 
@@ -351,6 +437,8 @@ docker exec -it restore-redis redis-cli -a {sua_senha} PING
 | RabbitMQ | 5672/15672 | guest | {sua_senha} | http://localhost:15672 |
 | Kafka | 9092 | - | - | - |
 | Kafka UI | 8081 | - | - | http://localhost:8081 |
+| Elasticsearch | 9200 | - | - | - |
+| Kibana | 5601 | - | - | http://localhost:5601 |
 
 ### Volumes e Persistência
 - **restore_tools_postgres_data**: Dados do PostgreSQL
@@ -359,6 +447,7 @@ docker exec -it restore-redis redis-cli -a {sua_senha} PING
 - **kafka-data**: Dados do Kafka
 - **zookeeper-data**: Dados do Zookeeper
 - **zookeeper-logs**: Logs do Zookeeper
+- **elasticsearch_data**: Dados do Elasticsearch
 
 ### Rede Docker
 Todos os containers estão na rede `restore-tools-network`, permitindo comunicação interna entre os serviços.

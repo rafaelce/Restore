@@ -11,7 +11,8 @@ import { useUserInfoQuery } from "../../features/account/accountApi";
 const midLink = [
   { title: "catalog", path: "/catalog" },
   { title: "about", path: "/about" },
-  { title: "contact", path: "/contact" }
+  { title: "contact", path: "/contact" },
+  { title: "elastic", path: "/elasticsearch-search" }
 ];
 
 const rightLink = [

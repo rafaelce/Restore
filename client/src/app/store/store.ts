@@ -10,6 +10,7 @@ import { accountApi } from "../../features/account/accountApi";
 import { checkoutApi } from "../../features/checkout/checkoutApi";
 import { orderApi } from "../../features/orders/orderApi";
 import { adminApi } from "../../features/admin/adminApi";
+import { elasticsearchApi } from "../../features/catalog/elasticsearchApi";
 
 export const store = configureStore({
   reducer: {
@@ -20,6 +21,7 @@ export const store = configureStore({
     [checkoutApi.reducerPath]: checkoutApi.reducer,
     [orderApi.reducerPath]: orderApi.reducer,
     [adminApi.reducerPath]: adminApi.reducer,
+    [elasticsearchApi.reducerPath]: elasticsearchApi.reducer,
     ui: UiSlice.reducer,
     catalog: catalogSlice.reducer,
   },
@@ -31,7 +33,8 @@ export const store = configureStore({
         accountApi.middleware,
         checkoutApi.middleware,
         orderApi.middleware,
-        adminApi.middleware
+        adminApi.middleware,
+        elasticsearchApi.middleware
     ),
 });
 

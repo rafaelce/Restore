@@ -16,6 +16,7 @@ import CheckoutSuccess from "../../features/checkout/CheckoutSuccess";
 import OrdersPage from "../../features/orders/OrderPage";
 import OrderDetailsPage from "../../features/orders/OrderDetailsPage";
 import InventoryPage from "../../features/admin/InventoryPage";
+import ElasticsearchSearch from "../../features/catalog/ElasticsearchSearch";
 
 export const router = createBrowserRouter([
   {
@@ -38,6 +39,7 @@ export const router = createBrowserRouter([
       { path: "*", element: <Navigate to="/not-found" replace /> },
 
       { path: "catalog", element: <Catalog /> },
+      { path: '/elasticsearch-search', element: <ElasticsearchSearch />},
       { path: "catalog/:id", element: <ProductDetails /> },
       { path: "about", element: <AboutPage /> },
       { path: "contact", element: <ContactPage /> },
