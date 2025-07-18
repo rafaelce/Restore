@@ -10,6 +10,7 @@ using API.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Path = System.IO.Path;
 
 namespace API.Controllers;
 

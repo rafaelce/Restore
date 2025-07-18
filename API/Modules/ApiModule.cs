@@ -17,8 +17,9 @@ public static class ApiModule
     {
         services.AddDatabaseModule(configuration)
                 .AddMassTransitModule(configuration)
-                .AddKafkaModule(configuration)
-                .AddElasticSearchModule(configuration);
+                //.AddKafkaModule(configuration)
+                .AddElasticSearchModule(configuration)
+                .AddGraphQLModule();
 
         services.AddHostedService<ApplyMigrationBackgroundService>();
         services.AddAutoMapper(cfg => cfg.AddMaps(typeof(Program).Assembly));
@@ -66,8 +67,8 @@ public static class ApiModule
         services.AddScoped<ImageService>();
         services.AddScoped<IRedisCacheService, RedisCacheService>();
         services.AddScoped<IMessageService, MassTransitService>();
-        services.AddScoped<IKafkaService, KafkaService>();
-        services.AddScoped<KafkaTopicService>();
+        //services.AddScoped<IKafkaService, KafkaService>();
+        //services.AddScoped<KafkaTopicService>();
         services.AddScoped<IElasticsearchService, ElasticsearchService>();
 
         return services;

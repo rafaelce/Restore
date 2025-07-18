@@ -17,6 +17,7 @@ import OrdersPage from "../../features/orders/OrderPage";
 import OrderDetailsPage from "../../features/orders/OrderDetailsPage";
 import InventoryPage from "../../features/admin/InventoryPage";
 import ElasticsearchSearch from "../../features/catalog/ElasticsearchSearch";
+import GraphQLPage from "../../features/catalog/GraphQLPage";
 
 export const router = createBrowserRouter([
   {
@@ -40,6 +41,7 @@ export const router = createBrowserRouter([
 
       { path: "catalog", element: <Catalog /> },
       { path: '/elasticsearch-search', element: <ElasticsearchSearch />},
+      { path: "graphql", element: <GraphQLPage /> },
       { path: "catalog/:id", element: <ProductDetails /> },
       { path: "about", element: <AboutPage /> },
       { path: "contact", element: <ContactPage /> },

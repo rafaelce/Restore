@@ -21,6 +21,7 @@ C4Context
         SystemDb(rabbitmq, "RabbitMQ", "Sistema de mensageria para processamento assíncrono.")
         SystemDb(kafka, "Apache Kafka", "Sistema de streaming de dados para analytics e eventos em tempo real.")
         SystemDb(elasticsearch, "Elasticsearch", "Motor de busca e indexação para busca avançada de produtos.")
+        System(graphql, "GraphQL API", "API alternativa ao REST com consultas flexíveis e eficientes.")
         System_Ext(stripe, "Stripe API", "Serviço externo de pagamentos.")
       }
     }
@@ -31,8 +32,10 @@ C4Context
     Rel(api, rabbitmq, "Mensagens assíncronas")
     Rel(api, kafka, "Streaming de eventos")
     Rel(api, elasticsearch, "Busca avançada")
+    Rel(api, graphql, "API alternativa")
     Rel(api, stripe, "Integração para pagamentos")
     BiRel(api, client, "Retorna dados e status")
+    BiRel(client, graphql, "Consultas flexíveis")
 ```
 
 ### Como funciona
@@ -43,6 +46,7 @@ C4Context
 - O **RabbitMQ** processa mensagens de forma assíncrona (pedidos, emails, etc.).
 - O **Apache Kafka** processa eventos em tempo real para analytics e comportamento do usuário.
 - O **Elasticsearch** fornece busca avançada e indexação de produtos com recursos de full-text search.
+- O **GraphQL** oferece uma API alternativa ao REST com consultas flexíveis e eficientes.
 - Para pagamentos, a **API** integra com o serviço externo **Stripe**, processando transações de forma segura.
 
 ---
@@ -111,6 +115,7 @@ O arquivo `appsettings.Development.json` está no `.gitignore` e **não deve ser
 - **Mensageria RabbitMQ** para processamento assíncrono
 - **Streaming Kafka** para analytics em tempo real
 - **Busca Elasticsearch** para busca avançada de produtos
+- **API GraphQL** para consultas flexíveis e eficientes
 
 ## Tecnologias Utilizadas
 
@@ -122,6 +127,7 @@ O arquivo `appsettings.Development.json` está no `.gitignore` e **não deve ser
 - RabbitMQ (Mensageria)
 - Apache Kafka (Streaming)
 - Elasticsearch (Busca)
+- GraphQL (API alternativa)
 - Stripe API
 
 ### Frontend
@@ -278,6 +284,243 @@ docker-compose up -d
 POST http://localhost:5000/api/orders/kafka-demo
 ```
 Gera eventos únicos para teste do sistema Kafka.
+
+---
+
+## GraphQL (API de Consulta)
+
+O projeto utiliza **GraphQL** como uma API alternativa ao REST, oferecendo consultas flexíveis e eficientes.
+
+### O que é GraphQL?
+GraphQL é um **"menu à la carte"** para APIs - permite que o cliente especifique exatamente quais dados quer receber. Diferente do REST (que é como um cardápio fixo), o GraphQL permite que você monte sua refeição ideal.
+
+### Como funciona no projeto:
+- **Endpoint Único**: Todas as consultas vão para `/graphql`
+- **Consultas Flexíveis**: Cliente escolhe exatamente quais campos quer
+- **Paginação Inteligente**: Sistema de cursor-based pagination
+- **Filtros e Ordenação**: Consultas complexas em uma única requisição
+- **Tipagem Forte**: Schema define exatamente o que pode ser consultado
+
+### Benefícios:
+- ⚡ **Performance**: Menos over-fetching e under-fetching
+- 🎯 **Flexibilidade**: Cliente define exatamente o que precisa
+- 📊 **Eficiência**: Uma requisição para dados complexos
+- 🔍 **Documentação Automática**: Schema é a documentação
+- 🎨 **Experiência do Desenvolvedor**: IntelliSense e validação
+
+### Exemplo prático:
+```graphql
+# Consulta REST tradicional (múltiplas requisições)
+GET /api/products          # Lista produtos
+GET /api/products/1        # Detalhes do produto
+GET /api/products/1/orders # Pedidos do produto
+
+# Consulta GraphQL (uma única requisição)
+query {
+  product(id: 1) {
+    id
+    name
+    price
+    brand
+    orders {
+      id
+      total
+      orderDate
+    }
+  }
+}
+```
+
+### Configuração:
+O GraphQL já está configurado e disponível em:
+```bash
+# Endpoint GraphQL
+http://localhost:5000/graphql
+
+# Playground GraphQL (IDE)
+http://localhost:5000/graphql/
+```
+
+### Queries Disponíveis:
+
+#### Produtos:
+```graphql
+# Listar produtos com paginação
+query {
+  products {
+    nodes {
+      id
+      name
+      price
+      brand
+      type
+    }
+    pageInfo {
+      hasNextPage
+      hasPreviousPage
+    }
+  }
+}
+
+# Contar produtos
+query {
+  productCount
+}
+
+# Buscar produto específico
+query {
+  product(id: 1) {
+    id
+    name
+    price
+    brand
+    description
+  }
+}
+```
+
+#### Usuários:
+```graphql
+# Listar usuários
+query {
+  users {
+    nodes {
+      id
+      userName
+      email
+    }
+  }
+}
+
+# Buscar usuário específico
+query {
+  user(id: "user-id") {
+    id
+    userName
+    email
+  }
+}
+```
+
+#### Pedidos:
+```graphql
+# Listar pedidos
+query {
+  orders {
+    nodes {
+      id
+      buyerEmail
+      orderDate
+      orderStatus
+      total
+    }
+  }
+}
+
+# Buscar pedido específico
+query {
+  order(id: 1) {
+    id
+    buyerEmail
+    orderDate
+    orderStatus
+    total
+    orderItems {
+      id
+      price
+      quantity
+      itemOrdered {
+        name
+        pictureUrl
+      }
+    }
+  }
+}
+```
+
+### Mutations Disponíveis:
+
+#### Produtos:
+```graphql
+# Criar produto
+mutation {
+  createProduct(input: {
+    name: "Novo Produto"
+    description: "Descrição do produto"
+    price: 1000
+    type: "Boot"
+    brand: "Angular"
+    quantityInStock: 10
+  }) {
+    id
+    name
+    price
+  }
+}
+
+# Atualizar produto
+mutation {
+  updateProduct(id: 1, input: {
+    name: "Produto Atualizado"
+    price: 1500
+  }) {
+    id
+    name
+    price
+  }
+}
+
+# Deletar produto
+mutation {
+  deleteProduct(id: 1)
+}
+```
+
+#### Pedidos:
+```graphql
+# Criar pedido
+mutation {
+  createOrder(input: {
+    shippingAddress: {
+      name: "João Silva"
+      line1: "Rua das Flores, 123"
+      city: "São Paulo"
+      state: "SP"
+      postalCode: "01234-567"
+      country: "Brasil"
+    }
+    paymentSummary: {
+      last4: "1234"
+      brand: "visa"
+      expMonth: 12
+      expYear: 2025
+    }
+  }) {
+    id
+    buyerEmail
+    total
+  }
+}
+
+# Atualizar status do pedido
+mutation {
+  updateOrderStatus(id: 1, status: SHIPPED)
+}
+```
+
+### Recursos Avançados:
+- **Filtros**: `where: { brand: { eq: "Angular" } }`
+- **Ordenação**: `order: { price: ASC }`
+- **Paginação**: `first: 10, after: "cursor"`
+- **Projeções**: Escolha exatamente quais campos quer
+- **Fragments**: Reutilize partes de queries
+- **Variables**: Use variáveis para queries dinâmicas
+
+### Interface de Desenvolvimento:
+- **GraphQL Playground**: http://localhost:5000/graphql/
+- **Schema Explorer**: Navegue pelo schema automaticamente
+- **Query Builder**: Construa queries visualmente
+- **Documentation**: Documentação automática do schema
 
 ---
 

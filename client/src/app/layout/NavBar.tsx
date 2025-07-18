@@ -12,7 +12,8 @@ const midLink = [
   { title: "catalog", path: "/catalog" },
   { title: "about", path: "/about" },
   { title: "contact", path: "/contact" },
-  { title: "elastic", path: "/elasticsearch-search" }
+  { title: "elastic", path: "/elasticsearch-search" },
+  { title: "graphql", path: "/graphql" }
 ];
 
 const rightLink = [

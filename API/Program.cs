@@ -40,7 +40,7 @@ app.UseStaticFiles();
 
 app.UseCors(opt =>
 {
-    opt.WithOrigins("https://localhost:3000")
+    opt.WithOrigins("https://localhost:3000", "http://localhost:3000")
        .AllowAnyHeader()
        .AllowAnyMethod()
        .AllowCredentials();
@@ -51,5 +51,7 @@ app.UseAuthorization();
 
 app.MapGroup("api").MapIdentityApi<User>();
 app.MapFallbackToController("Index", "Fallback");
+
+app.MapGraphQL("/graphql");
 
 app.Run();

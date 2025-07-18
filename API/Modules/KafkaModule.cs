@@ -9,10 +9,11 @@ public static class KafkaModule
     {
         services.Configure<KafkaSettings>(config.GetSection("Kafka"));
 
+/*
         services.AddHostedService<UserEventsConsumer>();
         services.AddHostedService<OrderEventsConsumer>();
         services.AddHostedService<SearchEventsConsumer>();
-
+*/
         return services;
     }
 }
