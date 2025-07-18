@@ -13,7 +13,7 @@ public class MassTransitService : IMessageService
         _publishEndpoint = publishEndpoint;
         _sendEndpointProvider = sendEndpointProvider;
     }
-
+    
     public async Task PublishMessageAsync<T>(T message) where T : class
     {
         await _publishEndpoint.Publish(message);

@@ -47,7 +47,7 @@ public class ProductsController(ApplicationContext _context, IMapper _mapper, Im
        Response.AddPaginationHeader(products.Metadata);
            
        return products;
-    }
+    }          
 
     [HttpGet("{id}")]
     public async Task<ActionResult<Product>> GetProduct(int id)

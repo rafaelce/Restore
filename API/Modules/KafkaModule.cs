@@ -5,7 +5,7 @@ namespace API.Modules;
 
 public static class KafkaModule
 {
-    public static IServiceCollection AddKafkaConsumer(this IServiceCollection services, IConfiguration config)
+    public static IServiceCollection AddKafkaModule(this IServiceCollection services, IConfiguration config)
     {
         services.Configure<KafkaSettings>(config.GetSection("Kafka"));
 

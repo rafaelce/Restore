@@ -106,7 +106,7 @@ public class OrdersController(ApplicationContext context, IMessageService _messa
 
             if (sampleOrders == null || !sampleOrders.Any())
                 return BadRequest("Arquivo JSON inválido ou vazio");
-
+            
 
 
             var results = new List<object>();
@@ -154,7 +154,7 @@ public class OrdersController(ApplicationContext context, IMessageService _messa
                         UpdatedAt = DateTime.UtcNow
                     };
                                     await _messageService.PublishMessageAsync(stockMessage, "stock-update");
-                _logger.LogInformation($"✅ Mensagem de estoque enviada para produto {item.ProductId}");
+                    _logger.LogInformation($"✅ Mensagem de estoque enviada para produto {item.ProductId}");
                 }
 
                 // 5. Enviar mensagem para geração de fatura
